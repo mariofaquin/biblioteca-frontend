@@ -1,0 +1,40 @@
+# =====================================================
+# DOCKERFILE FRONTEND - ORACLE CLOUD (SIMPLIFICADO)
+# =====================================================
+
+FROM node:18-alpine AS base
+
+# Instalar dependências necessárias
+RUN apk add --no-cache libc6-compat
+
+WORKDIR /app
+
+# Copiar arquivos de dependências
+COPY package*.json ./
+
+# Instalar dependências
+RUN npm ci --only=production
+
+# Copiar código fonte
+COPY . .
+
+# Variáveis de ambiente para build
+ARG NEXT_PUBLIC_API_URL=http://164.152.46.41:8003
+ARG NEXT_PUBLIC_APP_URL=http://164.152.46.41:3000
+
+ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
+ENV NEXT_PUBLIC_APP_URL=$NEXT_PUBLIC_APP_URL
+ENV NODE_ENV=production
+ENV NEXT_TELEMETRY_DISABLED=1
+
+# Desabilitar Tailwind CSS temporariamente
+ENV DISABLE_TAILWIND=true
+
+# Build da aplicação
+RUN npm run build
+
+# Expor porta
+EXPOSE 3000
+
+# Comando para iniciar
+CMD ["npm", "start"]

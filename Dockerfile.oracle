@@ -1,0 +1,35 @@
+# =====================================================
+# DOCKERFILE ORACLE - FRONTEND NEXT.JS
+# =====================================================
+# Versão simplificada para Oracle Cloud (modo dev)
+# =====================================================
+
+FROM node:18-alpine
+
+WORKDIR /app
+
+# Instalar dependências do sistema
+RUN apk add --no-cache libc6-compat curl
+
+# Copiar arquivos de dependências
+COPY package*.json ./
+
+# Instalar dependências
+RUN npm ci --legacy-peer-deps
+
+# Copiar código fonte
+COPY . .
+
+# Variáveis de ambiente
+ENV NEXT_TELEMETRY_DISABLED=1
+ENV NODE_ENV=development
+
+# Expor porta
+EXPOSE 3000
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
+  CMD curl -f http://localhost:3000 || exit 1
+
+# Comando para iniciar aplicação em modo desenvolvimento
+CMD ["npm", "run", "dev"]

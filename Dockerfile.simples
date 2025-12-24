@@ -1,0 +1,42 @@
+# =====================================================
+# DOCKERFILE SIMPLES - BIBLIOTECH FRONTEND
+# =====================================================
+# Versão simplificada para testar fluxo completo
+# =====================================================
+
+FROM node:18-alpine AS base
+
+# Instalar dependências do sistema
+RUN apk add --no-cache libc6-compat curl
+WORKDIR /app
+
+# Copiar package.json
+COPY package.json package-lock.json* ./
+
+# Instalar dependências
+RUN npm ci --omit=dev
+
+# Copiar código fonte
+COPY . .
+
+# Substituir arquivos problemáticos por versões simples
+RUN cp /app/src/app/layout-simples.tsx /app/src/app/layout.tsx
+RUN cp /app/src/app/page-simples.tsx /app/src/app/page.tsx
+
+# Build da aplicação
+RUN npm run build
+
+# Expor porta
+EXPOSE 3000
+
+# Variáveis de ambiente
+ENV NODE_ENV=production
+ENV PORT=3000
+ENV NEXT_TELEMETRY_DISABLED=1
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
+    CMD curl -f http://localhost:3000 || exit 1
+
+# Iniciar aplicação
+CMD ["npm", "start"]

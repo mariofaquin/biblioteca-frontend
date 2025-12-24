@@ -1,0 +1,32 @@
+# =====================================================
+# DOCKERFILE FRONTEND SIMPLES - SEM TAILWIND
+# =====================================================
+
+FROM node:18-alpine
+
+WORKDIR /app
+
+# Copiar package.json
+COPY package*.json ./
+
+# Instalar dependências básicas
+RUN npm install --production
+
+# Copiar código
+COPY . .
+
+# Variáveis de ambiente
+ENV NODE_ENV=production
+ENV NEXT_PUBLIC_API_URL=http://164.152.46.41:8003
+ENV NEXT_PUBLIC_APP_URL=http://164.152.46.41:3000
+ENV NEXT_TELEMETRY_DISABLED=1
+
+# Criar página simples sem CSS complexo
+RUN echo 'export default function Home() { return <div><h1>Sistema Biblioteca</h1><p>Backend: <a href="http://164.152.46.41:8003/api/health">Testar API</a></p></div>; }' > src/app/page.tsx
+
+# Build
+RUN npm run build
+
+EXPOSE 3000
+
+CMD ["npm", "start"]

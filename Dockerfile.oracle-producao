@@ -1,0 +1,43 @@
+# =====================================================
+# DOCKERFILE ORACLE - FRONTEND NEXT.JS (PRODUÇÃO)
+# =====================================================
+# Versão de produção que funciona com Tailwind CSS
+# =====================================================
+
+FROM node:18-alpine AS base
+
+# Instalar dependências do sistema
+RUN apk add --no-cache libc6-compat curl
+
+WORKDIR /app
+
+# Copiar arquivos de dependências
+COPY package*.json ./
+
+# Instalar dependências
+RUN npm ci --legacy-peer-deps --only=production
+
+# Copiar código fonte
+COPY . .
+
+# Variáveis de ambiente para build
+ARG NEXT_PUBLIC_API_URL=http://164.152.46.41:8003
+ARG NEXT_PUBLIC_APP_URL=http://164.152.46.41:3000
+
+ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
+ENV NEXT_PUBLIC_APP_URL=$NEXT_PUBLIC_APP_URL
+ENV NODE_ENV=production
+ENV NEXT_TELEMETRY_DISABLED=1
+
+# Build da aplicação (compila Tailwind CSS)
+RUN npm run build
+
+# Expor porta
+EXPOSE 3000
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
+  CMD curl -f http://localhost:3000 || exit 1
+
+# Comando para iniciar em modo produção
+CMD ["npm", "start"]

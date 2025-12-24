@@ -1,0 +1,8 @@
+name = "biblioteca-multiempresa"
+compatibility_date = "2024-01-01"
+
+[env.production]
+name = "biblioteca-multiempresa-prod"
+
+[env.staging]
+name = "biblioteca-multiempresa-staging"

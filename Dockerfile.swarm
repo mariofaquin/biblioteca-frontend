@@ -1,0 +1,80 @@
+# =====================================================
+# DOCKERFILE SWARM - FRONTEND NEXT.JS
+# =====================================================
+# Otimizado para Docker Swarm
+# =====================================================
+
+FROM node:18-alpine AS base
+
+# Instalar dependências do sistema
+RUN apk add --no-cache libc6-compat curl git
+
+# =====================================================
+# Estágio 1: Dependências
+# =====================================================
+FROM base AS deps
+
+WORKDIR /app
+
+# Copiar arquivos de dependências
+COPY package*.json ./
+
+# Instalar dependências
+RUN npm ci --legacy-peer-deps --silent
+
+# =====================================================
+# Estágio 2: Build
+# =====================================================
+FROM base AS builder
+
+WORKDIR /app
+
+# Copiar dependências do estágio anterior
+COPY --from=deps /app/node_modules ./node_modules
+
+# Copiar código fonte
+COPY . .
+
+# Variáveis de ambiente para build
+ENV NEXT_TELEMETRY_DISABLED=1
+ENV NODE_ENV=production
+
+# Build da aplicação (modo standalone)
+RUN npm run build
+
+# =====================================================
+# Estágio 3: Produção
+# =====================================================
+FROM base AS runner
+
+WORKDIR /app
+
+# Variáveis de ambiente
+ENV NODE_ENV=production
+ENV NEXT_TELEMETRY_DISABLED=1
+ENV PORT=3000
+ENV HOSTNAME="0.0.0.0"
+
+# Criar usuário não-root
+RUN addgroup --system --gid 1001 nodejs && \
+    adduser --system --uid 1001 nextjs
+
+# Copiar arquivos necessários do build
+COPY --from=builder /app/public ./public
+
+# Copiar build do Next.js
+COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
+COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
+
+# Mudar para usuário não-root
+USER nextjs
+
+# Expor porta
+EXPOSE 3000
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
+  CMD curl -f http://localhost:3000 || exit 1
+
+# Comando para iniciar aplicação
+CMD ["node", "server.js"]
