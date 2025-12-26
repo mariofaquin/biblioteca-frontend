@@ -31,7 +31,7 @@ export function LoanList() {
   // Verificar se o usuário é admin ou root para mostrar coluna de usuário
   const [isAdminOrRoot, setIsAdminOrRoot] = useState(false)
   
-  useState(() => {
+  useEffect(() => {
     try {
       const currentUser = JSON.parse(localStorage.getItem('user') || '{}')
       const isRoot = currentUser.is_root === true || currentUser.is_root === 'true'
@@ -43,7 +43,7 @@ export function LoanList() {
     } catch (error) {
       console.log('Erro ao verificar permissões do usuário')
     }
-  })
+  }, [])
   
   // Hooks para dados
   const { data: loansData, isLoading: loansLoading } = useLoans({
