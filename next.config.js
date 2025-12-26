@@ -1,30 +1,21 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   output: 'standalone',
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
-  typescript: {
-    ignoreBuildErrors: true,
-  },
+  
+  // Desabilitar geração estática para páginas com useSearchParams
   experimental: {
-    serverComponentsExternalPackages: [],
+    missingSuspenseWithCSRBailout: false,
   },
-  env: {
-    NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
-    NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL,
-  },
+  
+  // Configurações de imagem
   images: {
-    domains: ['localhost', '64.181.182.71'],
-    unoptimized: true
+    domains: ['localhost', '164.152.46.41'],
+    unoptimized: true,
   },
-  async rewrites() {
-    return [
-      {
-        source: '/api/:path*',
-        destination: `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8003'}/api/:path*`,
-      },
-    ]
+  
+  // Variáveis de ambiente públicas
+  env: {
+    NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL || 'http://164.152.46.41:8003',
   },
 }
 
