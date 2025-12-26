@@ -50,7 +50,10 @@ export function LoanList() {
     page: currentPage,
     per_page: 20,
   })
-  const { reservations, isLoading: reservationsLoading, cancelReservation } = useReservations()
+  const loans = Array.isArray(loansData?.data) ? loansData.data : []
+  
+  const { reservations: reservationsData, isLoading: reservationsLoading, cancelReservation } = useReservations()
+  const reservations = Array.isArray(reservationsData) ? reservationsData : []
   
   // Hooks para ações
   const renewLoanMutation = useRenewLoan()
@@ -99,9 +102,6 @@ export function LoanList() {
       console.error('Erro ao efetivar empréstimo:', error)
     }
   }
-  
-  
-  const loans = loansData?.data || []
 
   const getStatusBadge = (status: string, daysOverdue: number = 0) => {
     switch (status) {
