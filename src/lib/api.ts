@@ -2,8 +2,10 @@ import axios from 'axios'
 import Cookies from 'js-cookie'
 
 // IMPORTANTE: Frontend Vercel SEMPRE usa backend Oracle
-// Backend Oracle: http://164.152.46.41:8003
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://164.152.46.41:8003'
+// Backend Oracle: http://164.152.46.41:8003/api
+const API_URL = process.env.NEXT_PUBLIC_API_URL 
+  ? `${process.env.NEXT_PUBLIC_API_URL}/api`
+  : 'http://164.152.46.41:8003/api'
 
 console.log('🔧 API_URL configurada:', API_URL)
 console.log('🔧 NEXT_PUBLIC_API_URL:', process.env.NEXT_PUBLIC_API_URL)
