@@ -1,9 +1,12 @@
 import axios from 'axios'
 import Cookies from 'js-cookie'
 
-// Para produção na Vercel, usar API Routes do Next.js (/api)
-// Para desenvolvimento local, pode usar backend separado se configurado
-const API_URL = process.env.NEXT_PUBLIC_API_URL || '/api'
+// IMPORTANTE: Frontend Vercel SEMPRE usa backend Oracle
+// Backend Oracle: http://164.152.46.41:8003
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://164.152.46.41:8003'
+
+console.log('🔧 API_URL configurada:', API_URL)
+console.log('🔧 NEXT_PUBLIC_API_URL:', process.env.NEXT_PUBLIC_API_URL)
 
 export const api = axios.create({
   baseURL: API_URL,
