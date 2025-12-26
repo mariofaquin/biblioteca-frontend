@@ -50,7 +50,8 @@ export function BookList() {
   const { selectedCompany, user } = useCompany()
   const { createReservation, getUserPosition, getBookQueue } = useReservations()
   const { data: loansData } = useLoans()
-  const { data: categories = [] } = useCategories()
+  const { data: categoriesData } = useCategories()
+  const categories = categoriesData || []
   const deleteBookMutation = useDeleteBook()
 
   const { data: booksData, isLoading } = useBooks({
@@ -67,17 +68,20 @@ export function BookList() {
   // FALLBACK: Se a API retornar apenas as 4 categorias padrão,
   // extrair categorias únicas dos livros visíveis
   const allCategories = React.useMemo(() => {
+    // Garantir que categories é um array
+    const categoriesArray = Array.isArray(categories) ? categories : []
+    
     // Se temos categorias da API e são mais que as 4 padrão, usar elas
-    if (categories.length > 4) {
-      return categories
+    if (categoriesArray.length > 4) {
+      return categoriesArray
     }
     
     // Verificar se são as categorias hardcoded
-    const isHardcoded = categories.length === 4 && 
-      categories.includes('Tecnologia') && 
-      categories.includes('Literatura') &&
-      categories.includes('História') &&
-      categories.includes('Ciência')
+    const isHardcoded = categoriesArray.length === 4 && 
+      categoriesArray.includes('Tecnologia') && 
+      categoriesArray.includes('Literatura') &&
+      categoriesArray.includes('História') &&
+      categoriesArray.includes('Ciência')
     
     if (isHardcoded && books.length > 0) {
       // Extrair categorias únicas dos livros
@@ -86,7 +90,7 @@ export function BookList() {
       return bookCategories
     }
     
-    return categories
+    return categoriesArray
   }, [categories, books])
   
   // Resetar página quando filtros mudarem

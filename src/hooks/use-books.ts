@@ -5,7 +5,7 @@ import { booksService, BooksFilters, CreateBookData, UpdateBookData } from '@/li
 import { useToast } from '@/hooks/use-toast'
 
 export function useBooks(filters: BooksFilters = {}) {
-  const [data, setData] = useState<any>(null)
+  const [data, setData] = useState<any>({ data: [], total: 0, current_page: 1, last_page: 1, per_page: 20 })
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<any>(null)
 
@@ -14,10 +14,11 @@ export function useBooks(filters: BooksFilters = {}) {
       try {
         setIsLoading(true)
         const result = await booksService.getBooks(filters)
-        setData(result)
+        setData(result || { data: [], total: 0, current_page: 1, last_page: 1, per_page: 20 })
         setError(null)
       } catch (err) {
         setError(err)
+        setData({ data: [], total: 0, current_page: 1, last_page: 1, per_page: 20 })
       } finally {
         setIsLoading(false)
       }

@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { booksService } from '@/lib/services/books'
 
 export function useCategories() {
-  const [data, setData] = useState<any>(null)
+  const [data, setData] = useState<any>([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<any>(null)
 
@@ -11,10 +11,11 @@ export function useCategories() {
       try {
         setIsLoading(true)
         const result = await booksService.getCategories()
-        setData(result)
+        setData(result || [])
         setError(null)
       } catch (err) {
         setError(err)
+        setData([]) // Retornar array vazio em caso de erro
       } finally {
         setIsLoading(false)
       }

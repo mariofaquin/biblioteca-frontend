@@ -5,7 +5,7 @@ import { usePermissions } from '@/hooks/use-permissions'
 
 // Hook para buscar empréstimos
 export function useLoans(filters: { page?: number; per_page?: number } = {}) {
-  const [data, setData] = useState<any>(null)
+  const [data, setData] = useState<any>({ data: [], total: 0, current_page: 1, last_page: 1, per_page: 20 })
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<any>(null)
   const { user, isUser, isAdmin, isRoot } = usePermissions()
@@ -38,10 +38,11 @@ export function useLoans(filters: { page?: number; per_page?: number } = {}) {
           per_page: filters.per_page,
         });
         console.log('📊 Hook useLoans: Resultado recebido:', result);
-        setData(result)
+        setData(result || { data: [], total: 0, current_page: 1, last_page: 1, per_page: 20 })
         setError(null)
       } catch (err) {
         setError(err)
+        setData({ data: [], total: 0, current_page: 1, last_page: 1, per_page: 20 })
       } finally {
         setIsLoading(false)
       }
